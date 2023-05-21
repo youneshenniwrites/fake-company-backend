@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "local": "nodemon src/app.ts"
+    "local": "nodemon -r tsconfig-paths/register src/app.ts"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +26,7 @@
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/hpp": "^0.2.2",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "tsconfig-paths": "^4.2.0"
   }
 }
