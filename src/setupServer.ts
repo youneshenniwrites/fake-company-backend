@@ -1,5 +1,5 @@
 import {
-  Application,
+  Application as ExpressApplication,
   Request,
   Response,
   NextFunction,
@@ -15,12 +15,12 @@ import cookieSession from "cookie-session";
 import HTTP_STATUS from "http-status-codes";
 import "express-async-errors";
 
-const SERVER_PORT = 5000;
+const SERVER_PORT = 9000;
 
 export class FakeCompanyServer {
-  private app: Application;
+  private app: ExpressApplication;
 
-  constructor(app: Application) {
+  constructor(app: ExpressApplication) {
     this.app = app;
   }
 
@@ -34,7 +34,7 @@ export class FakeCompanyServer {
     this.globalErrorHandler(this.app);
   }
 
-  private async startServer(app: Application): Promise<void> {
+  private async startServer(app: ExpressApplication): Promise<void> {
     try {
       const httpServer: Server = new Server(app);
       this.startHttpServer(httpServer);
@@ -48,12 +48,12 @@ export class FakeCompanyServer {
     });
   }
 
-  private standardMiddleware(app: Application): void {
+  private standardMiddleware(app: ExpressApplication): void {
     app.use(compression());
     app.use(json({ limit: "50mb" }));
     app.use(urlencoded({ extended: true, limit: "50mb" }));
   }
-  private securityMiddleware(app: Application): void {
+  private securityMiddleware(app: ExpressApplication): void {
     app.use(
       cookieSession({
         name: "session",
@@ -73,9 +73,9 @@ export class FakeCompanyServer {
       })
     );
   }
-  private routeMiddleware(app: Application): void {}
+  private routeMiddleware(app: ExpressApplication): void {}
 
   private createSocketIO(httpServer: Server): void {}
 
-  private globalErrorHandler(app: Application): void {}
+  private globalErrorHandler(app: ExpressApplication): void {}
 }
