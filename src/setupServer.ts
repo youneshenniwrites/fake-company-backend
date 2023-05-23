@@ -6,6 +6,7 @@ import {
   urlencoded,
   json,
 } from "express";
+import "express-async-errors";
 import { Server } from "http";
 import cors from "cors";
 import helmet from "helmet";
@@ -13,9 +14,7 @@ import hpp from "hpp";
 import compression from "compression";
 import cookieSession from "cookie-session";
 import HTTP_STATUS from "http-status-codes";
-import "express-async-errors";
-
-const SERVER_PORT = 9000;
+import { config } from "./config";
 
 export class FakeCompanyServer {
   private app: ExpressApplication;
@@ -43,8 +42,8 @@ export class FakeCompanyServer {
     }
   }
   private startHttpServer(httpServer: Server): void {
-    httpServer.listen(SERVER_PORT, () => {
-      console.log(`Server running on port ${SERVER_PORT}`);
+    httpServer.listen(config.SERVER_PORT, () => {
+      console.log(`Server running on port ${config.SERVER_PORT}`);
     });
   }
 
@@ -57,16 +56,16 @@ export class FakeCompanyServer {
     app.use(
       cookieSession({
         name: "session",
-        keys: ["younes", "henni"],
+        keys: [`${config.SECRET_KEY_ONE}`, `${config.SECRET_KEY_TWO}`],
         maxAge: 7 * 24 * 60 * 60 * 1000, // valid for 7 days
-        secure: false,
+        secure: config.NODE_ENV !== "local",
       })
     );
     app.use(hpp());
     app.use(helmet());
     app.use(
       cors({
-        origin: "*",
+        origin: config.CLIENT_URL,
         credentials: true,
         optionsSuccessStatus: 200,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

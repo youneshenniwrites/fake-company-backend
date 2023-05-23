@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config({});
 
 class Config {
+  public SERVER_PORT: string | undefined;
   public DATABASE_URL: string | undefined;
   public JWT_TOKEN: string | undefined;
   public NODE_ENV: string | undefined;
@@ -20,6 +21,7 @@ class Config {
   public EC2_URL: string | undefined;
 
   constructor() {
+    this.SERVER_PORT = process.env.SERVER_PORT;
     this.DATABASE_URL = process.env.DATABASE_URL;
     this.JWT_TOKEN = process.env.JWT_TOKEN;
     this.NODE_ENV = process.env.NODE_ENV;
