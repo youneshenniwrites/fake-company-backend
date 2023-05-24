@@ -1,6 +1,6 @@
 import { Application } from 'express';
 
-export function applicationRoutes(expressApp: Application) {
+export function applicationRoutes(_expressApp: Application) {
   const routes = () => {
     // app.use("/test", serverAdapter.getRouter());
     // app.use("", healthRoutes.health());

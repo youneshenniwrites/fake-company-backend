@@ -66,7 +66,7 @@ export class FakeCompanyServer {
     return websocket;
   }
 
-  private establishWebSocketConnections(websocket: WebSocketServer) {
+  private establishWebSocketConnections(_websocket: WebSocketServer) {
     // TODO
   }
 
