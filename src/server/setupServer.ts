@@ -1,28 +1,18 @@
-import {
-  Application as ExpressApplication,
-  Request,
-  Response,
-  NextFunction,
-  urlencoded,
-  json,
-} from "express";
-import "express-async-errors";
-import { Server as HTTPServer } from "http";
-import { Server as WebSocketServer } from "socket.io";
-import { createClient as createRedisClient } from "redis";
-import { createAdapter as createRedisAdapter } from "@socket.io/redis-adapter";
-import cors from "cors";
-import helmet from "helmet";
-import hpp from "hpp";
-import compression from "compression";
-import cookieSession from "cookie-session";
-import HTTP_STATUS from "http-status-codes";
-import { config } from "../config";
-import { applicationRoutes } from "src/routes/routes";
-import {
-  CustomError,
-  IErrorResponse,
-} from "src/shared/globals/helpers/handleErrors";
+import { Application as ExpressApplication, Request, Response, NextFunction, urlencoded, json } from 'express';
+import 'express-async-errors';
+import { Server as HTTPServer } from 'http';
+import { Server as WebSocketServer } from 'socket.io';
+import { createClient as createRedisClient } from 'redis';
+import { createAdapter as createRedisAdapter } from '@socket.io/redis-adapter';
+import cors from 'cors';
+import helmet from 'helmet';
+import hpp from 'hpp';
+import compression from 'compression';
+import cookieSession from 'cookie-session';
+import HTTP_STATUS from 'http-status-codes';
+import { config } from '../config/setupConfig';
+import { applicationRoutes } from 'src/routes/routes';
+import { CustomError, IErrorResponse } from 'src/shared/globals/helpers/handleErrors';
 
 export class FakeCompanyServer {
   private expressApp: ExpressApplication;
@@ -48,54 +38,50 @@ export class FakeCompanyServer {
       this.startHttpServer(httpServer);
       this.establishWebSocketConnections(websocketServer);
     } catch (error) {
-      console.log(error);
+      logger.error(error);
     }
   }
 
   private startHttpServer(httpServer: HTTPServer) {
+    logger.info(`Server started with process ${process.pid}`);
     httpServer.listen(config.SERVER_PORT, () => {
-      console.log(`Server running on port ${config.SERVER_PORT}`);
+      logger.info(`Server running on port ${config.SERVER_PORT}`);
     });
   }
 
-  private async createWebSocket(
-    httpServer: HTTPServer
-  ): Promise<WebSocketServer> {
+  private async createWebSocket(httpServer: HTTPServer): Promise<WebSocketServer> {
     const websocket = new WebSocketServer(httpServer, {
       cors: {
         origin: config.CLIENT_URL,
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      },
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+      }
     });
 
     const redisPublishingClient = createRedisClient({ url: config.REDIS_HOST });
     const redisSubscriptionClient = redisPublishingClient.duplicate();
-    await Promise.all([
-      redisPublishingClient.connect(),
-      redisSubscriptionClient.connect(),
-    ]);
+    await Promise.all([redisPublishingClient.connect(), redisSubscriptionClient.connect()]);
 
-    websocket.adapter(
-      createRedisAdapter(redisPublishingClient, redisSubscriptionClient)
-    );
+    websocket.adapter(createRedisAdapter(redisPublishingClient, redisSubscriptionClient));
 
     return websocket;
   }
 
-  private establishWebSocketConnections(_websocket: WebSocketServer) {}
+  private establishWebSocketConnections(websocket: WebSocketServer) {
+    // TODO
+  }
 
   private standardMiddleware(expressApp: ExpressApplication) {
     expressApp.use(compression());
-    expressApp.use(json({ limit: "50mb" }));
-    expressApp.use(urlencoded({ extended: true, limit: "50mb" }));
+    expressApp.use(json({ limit: '50mb' }));
+    expressApp.use(urlencoded({ extended: true, limit: '50mb' }));
   }
   private securityMiddleware(expressApp: ExpressApplication) {
     expressApp.use(
       cookieSession({
-        name: "session",
+        name: 'session',
         keys: [`${config.SECRET_KEY_ONE}`, `${config.SECRET_KEY_TWO}`],
         maxAge: 7 * 24 * 60 * 60 * 1000, // valid for 7 days
-        secure: config.NODE_ENV !== "local",
+        secure: config.NODE_ENV !== 'local'
       })
     );
     expressApp.use(hpp());
@@ -105,7 +91,7 @@ export class FakeCompanyServer {
         origin: config.CLIENT_URL,
         credentials: true,
         optionsSuccessStatus: 200,
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
       })
     );
   }
@@ -116,24 +102,18 @@ export class FakeCompanyServer {
 
   private globalErrorHandler(expressApp: ExpressApplication) {
     //* This is to handle URLs that do not exist
-    expressApp.all("*", (req: Request, res: Response) => {
-      res
-        .status(HTTP_STATUS.NOT_FOUND)
-        .json({ message: `${req.originalUrl} not found` });
+    expressApp.all('*', (req: Request, res: Response) => {
+      res.status(HTTP_STATUS.NOT_FOUND).json({ message: `${req.originalUrl} not found` });
     });
 
-    expressApp.use(
-      (
-        error: IErrorResponse,
-        _req: Request,
-        res: Response,
-        next: NextFunction
-      ) => {
-        if (error instanceof CustomError) {
-          return res.status(error.statusCode).json(error.serialiseErrors());
-        }
-        next();
+    expressApp.use((error: IErrorResponse, _req: Request, res: Response, next: NextFunction) => {
+      logger.error(error);
+      if (error instanceof CustomError) {
+        return res.status(error.statusCode).json(error.serialiseErrors());
       }
-    );
+      next();
+    });
   }
 }
+
+const logger = config.createLogger('SERVER >>>');

@@ -1,4 +1,5 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
+import bunyan from 'bunyan';
 
 dotenv.config({});
 
@@ -39,12 +40,14 @@ class Config {
     this.EC2_URL = process.env.EC2_URL;
   }
 
+  public createLogger(name: string) {
+    return bunyan.createLogger({ name, level: 'debug' });
+  }
+
   public validateConfig() {
     for (const [key, value] of Object.entries(this)) {
       if (value === undefined) {
-        throw new Error(
-          `The value of configuration ${key} is undefined. Please provide one to proceed.`
-        );
+        throw new Error(`The value of configuration ${key} is undefined. Please provide one to proceed.`);
       }
     }
   }

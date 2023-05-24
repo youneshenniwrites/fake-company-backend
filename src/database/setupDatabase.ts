@@ -1,17 +1,19 @@
-import mongoose from "mongoose";
-import { config } from "../config";
+import mongoose from 'mongoose';
+import { config } from '../config/setupConfig';
 
 export const connectToDatabase = () => {
   const establishConnection = () => {
     mongoose
       .connect(`${config.DATABASE_URL}`)
-      .then(() => console.log("Successfully connected to database"))
+      .then(() => logger.info('Successfully connected to database'))
       .catch((error) => {
-        console.log("Error connecting to database", error);
+        logger.error('Error connecting to database', error);
         return process.exit(1);
       });
   };
   establishConnection();
 
-  mongoose.connection.on("disconnected", establishConnection);
+  mongoose.connection.on('disconnected', establishConnection);
 };
+
+const logger = config.createLogger('DATABASE >>>');

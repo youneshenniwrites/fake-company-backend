@@ -1,7 +1,7 @@
-import express from "express";
-import { FakeCompanyServer } from "./server/setupServer";
-import { connectToDatabase } from "./database/setupDatabase";
-import { config } from "./config";
+import express from 'express';
+import { FakeCompanyServer } from './server/setupServer';
+import { connectToDatabase } from './database/setupDatabase';
+import { config } from './config/setupConfig';
 
 class Application {
   public initialise() {
