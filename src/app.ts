@@ -4,7 +4,7 @@ import { connectToDatabase } from "./setupDatabase";
 import { config } from "./config";
 
 class Application {
-  public initialise(): void {
+  public initialise() {
     this.loadConfig();
 
     connectToDatabase();

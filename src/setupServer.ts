@@ -7,13 +7,17 @@ import {
   json,
 } from "express";
 import "express-async-errors";
-import { Server } from "http";
+import { Server as HTTPServer } from "http";
+import { Server as WebSocketServer } from "socket.io";
+import { createClient as createRedisClient } from "redis";
+import { createAdapter as createRedisAdapter } from "@socket.io/redis-adapter";
 import cors from "cors";
 import helmet from "helmet";
 import hpp from "hpp";
 import compression from "compression";
 import cookieSession from "cookie-session";
-// import HTTP_STATUS from "http-status-codes";
+import HTTP_STATUS from "http-status-codes";
+
 import { config } from "./config";
 
 export class FakeCompanyServer {
@@ -33,26 +37,55 @@ export class FakeCompanyServer {
     this.globalErrorHandler(this.app);
   }
 
-  private async startServer(app: ExpressApplication): Promise<void> {
+  private async startServer(app: ExpressApplication) {
     try {
-      const httpServer: Server = new Server(app);
+      const httpServer = new HTTPServer(app);
+      const websocketServer = await this.createWebSocket(httpServer);
       this.startHttpServer(httpServer);
+      this.establishWebSocketConnections(websocketServer);
     } catch (error) {
       console.log(error);
     }
   }
-  private startHttpServer(httpServer: Server): void {
+
+  private startHttpServer(httpServer: HTTPServer) {
     httpServer.listen(config.SERVER_PORT, () => {
       console.log(`Server running on port ${config.SERVER_PORT}`);
     });
   }
 
-  private standardMiddleware(app: ExpressApplication): void {
+  private async createWebSocket(
+    httpServer: HTTPServer
+  ): Promise<WebSocketServer> {
+    const websocket = new WebSocketServer(httpServer, {
+      cors: {
+        origin: config.CLIENT_URL,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      },
+    });
+
+    const redisPublishingClient = createRedisClient({ url: config.REDIS_HOST });
+    const redisSubscriptionClient = redisPublishingClient.duplicate();
+    await Promise.all([
+      redisPublishingClient.connect(),
+      redisSubscriptionClient.connect(),
+    ]);
+
+    websocket.adapter(
+      createRedisAdapter(redisPublishingClient, redisSubscriptionClient)
+    );
+
+    return websocket;
+  }
+
+  private establishWebSocketConnections(websocket: WebSocketServer) {}
+
+  private standardMiddleware(app: ExpressApplication) {
     app.use(compression());
     app.use(json({ limit: "50mb" }));
     app.use(urlencoded({ extended: true, limit: "50mb" }));
   }
-  private securityMiddleware(app: ExpressApplication): void {
+  private securityMiddleware(app: ExpressApplication) {
     app.use(
       cookieSession({
         name: "session",
@@ -72,9 +105,8 @@ export class FakeCompanyServer {
       })
     );
   }
-  private routeMiddleware(app: ExpressApplication): void {}
 
-  private createSocketIO(httpServer: Server): void {}
+  private routeMiddleware(app: ExpressApplication) {}
 
-  private globalErrorHandler(app: ExpressApplication): void {}
+  private globalErrorHandler(app: ExpressApplication) {}
 }
