@@ -1,6 +1,6 @@
 import express from "express";
-import { FakeCompanyServer } from "./setupServer";
-import { connectToDatabase } from "./setupDatabase";
+import { FakeCompanyServer } from "./server/setupServer";
+import { connectToDatabase } from "./database/setupDatabase";
 import { config } from "./config";
 
 class Application {
