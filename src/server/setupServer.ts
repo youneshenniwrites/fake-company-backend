@@ -17,29 +17,29 @@ import hpp from "hpp";
 import compression from "compression";
 import cookieSession from "cookie-session";
 import HTTP_STATUS from "http-status-codes";
-
 import { config } from "../config";
+import { applicationRoutes } from "src/routes/routes";
 
 export class FakeCompanyServer {
-  private app: ExpressApplication;
+  private expressApp: ExpressApplication;
 
-  constructor(app: ExpressApplication) {
-    this.app = app;
+  constructor(expressApp: ExpressApplication) {
+    this.expressApp = expressApp;
   }
 
   public start(): void {
-    this.startServer(this.app);
+    this.startServer(this.expressApp);
 
-    this.standardMiddleware(this.app);
-    this.securityMiddleware(this.app);
-    this.routeMiddleware(this.app);
+    this.standardMiddleware(this.expressApp);
+    this.securityMiddleware(this.expressApp);
+    this.routeMiddleware(this.expressApp);
 
-    this.globalErrorHandler(this.app);
+    this.globalErrorHandler(this.expressApp);
   }
 
-  private async startServer(app: ExpressApplication) {
+  private async startServer(expressApp: ExpressApplication) {
     try {
-      const httpServer = new HTTPServer(app);
+      const httpServer = new HTTPServer(expressApp);
       const websocketServer = await this.createWebSocket(httpServer);
       this.startHttpServer(httpServer);
       this.establishWebSocketConnections(websocketServer);
@@ -80,13 +80,13 @@ export class FakeCompanyServer {
 
   private establishWebSocketConnections(websocket: WebSocketServer) {}
 
-  private standardMiddleware(app: ExpressApplication) {
-    app.use(compression());
-    app.use(json({ limit: "50mb" }));
-    app.use(urlencoded({ extended: true, limit: "50mb" }));
+  private standardMiddleware(expressApp: ExpressApplication) {
+    expressApp.use(compression());
+    expressApp.use(json({ limit: "50mb" }));
+    expressApp.use(urlencoded({ extended: true, limit: "50mb" }));
   }
-  private securityMiddleware(app: ExpressApplication) {
-    app.use(
+  private securityMiddleware(expressApp: ExpressApplication) {
+    expressApp.use(
       cookieSession({
         name: "session",
         keys: [`${config.SECRET_KEY_ONE}`, `${config.SECRET_KEY_TWO}`],
@@ -94,9 +94,9 @@ export class FakeCompanyServer {
         secure: config.NODE_ENV !== "local",
       })
     );
-    app.use(hpp());
-    app.use(helmet());
-    app.use(
+    expressApp.use(hpp());
+    expressApp.use(helmet());
+    expressApp.use(
       cors({
         origin: config.CLIENT_URL,
         credentials: true,
@@ -106,7 +106,9 @@ export class FakeCompanyServer {
     );
   }
 
-  private routeMiddleware(app: ExpressApplication) {}
+  private routeMiddleware(expressApp: ExpressApplication) {
+    applicationRoutes(expressApp);
+  }
 
-  private globalErrorHandler(app: ExpressApplication) {}
+  private globalErrorHandler(expressApp: ExpressApplication) {}
 }
