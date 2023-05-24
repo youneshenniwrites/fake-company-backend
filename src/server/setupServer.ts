@@ -19,6 +19,10 @@ import cookieSession from "cookie-session";
 import HTTP_STATUS from "http-status-codes";
 import { config } from "../config";
 import { applicationRoutes } from "src/routes/routes";
+import {
+  CustomError,
+  IErrorResponse,
+} from "src/shared/globals/helpers/handleErrors";
 
 export class FakeCompanyServer {
   private expressApp: ExpressApplication;
@@ -78,7 +82,7 @@ export class FakeCompanyServer {
     return websocket;
   }
 
-  private establishWebSocketConnections(websocket: WebSocketServer) {}
+  private establishWebSocketConnections(_websocket: WebSocketServer) {}
 
   private standardMiddleware(expressApp: ExpressApplication) {
     expressApp.use(compression());
@@ -110,5 +114,26 @@ export class FakeCompanyServer {
     applicationRoutes(expressApp);
   }
 
-  private globalErrorHandler(expressApp: ExpressApplication) {}
+  private globalErrorHandler(expressApp: ExpressApplication) {
+    //* This is to handle URLs that do not exist
+    expressApp.all("*", (req: Request, res: Response) => {
+      res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ message: `${req.originalUrl} not found` });
+    });
+
+    expressApp.use(
+      (
+        error: IErrorResponse,
+        _req: Request,
+        res: Response,
+        next: NextFunction
+      ) => {
+        if (error instanceof CustomError) {
+          return res.status(error.statusCode).json(error.serialiseErrors());
+        }
+        next();
+      }
+    );
+  }
 }
