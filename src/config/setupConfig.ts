@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import bunyan from 'bunyan';
+import cloudinary from 'cloudinary';
 
 dotenv.config({});
 
@@ -50,6 +51,14 @@ class Config {
         throw new Error(`The value of configuration ${key} is undefined. Please provide one to proceed.`);
       }
     }
+  }
+
+  public cloudinaryConfig() {
+    cloudinary.v2.config({
+      cloud_name: this.CLOUD_NAME,
+      api_key: this.CLOUD_API_KEY,
+      api_secret: this.CLOUD_API_SECRET
+    });
   }
 }
 
