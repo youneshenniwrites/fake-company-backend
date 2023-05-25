@@ -10,9 +10,9 @@ import hpp from 'hpp';
 import compression from 'compression';
 import cookieSession from 'cookie-session';
 import HTTP_STATUS from 'http-status-codes';
-import { config } from '../config/setupConfig';
-import { applicationRoutes } from 'src/routes/routes';
-import { CustomError, IErrorResponse } from 'src/shared/globals/helpers/handleErrors';
+import { CustomError, IErrorResponse } from '@global/helpers/handleErrors';
+import { applicationRoutes } from '@root/routes/routes';
+import { config } from '@root/config/setupConfig';
 
 export class FakeCompanyServer {
   private expressApp: ExpressApplication;

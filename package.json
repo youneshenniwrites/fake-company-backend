@@ -46,6 +46,8 @@
     "nodemon": "^2.0.22",
     "prettier": "^2.8.8",
     "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.2.0"
+    "tsconfig-paths": "^4.2.0",
+    "ttypescript": "^1.5.15",
+    "typescript-transform-paths": "^3.4.6"
   }
 }

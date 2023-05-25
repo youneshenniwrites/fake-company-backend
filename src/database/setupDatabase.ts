@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { config } from '../config/setupConfig';
+import { config } from '@root/config/setupConfig';
 
 export const connectToDatabase = () => {
   const establishConnection = () => {
