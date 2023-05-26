@@ -2,11 +2,10 @@ import { JoiRequestValidationError } from '@global/helpers/handleErrors';
 import { Request, Response, NextFunction } from 'express';
 import { ObjectSchema } from 'joi';
 
-type validateWithJoiDecoratorType = (descriptor: PropertyDescriptor) => void;
+type validateWithJoiDecoratorType<T> = (target: T, key: string, descriptor: PropertyDescriptor) => void;
 
-// TODO: return to video 39 and answer the question
-export function validateWithJoiDecorator(schema: ObjectSchema): validateWithJoiDecoratorType {
-  return (descriptor: PropertyDescriptor) => {
+export function validateWithJoiDecorator<T>(schema: ObjectSchema): validateWithJoiDecoratorType<T> {
+  return (_target: T, _key: string, descriptor: PropertyDescriptor) => {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: [Request, Response, NextFunction]) {
