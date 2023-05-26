@@ -1,5 +1,5 @@
 import { hash, compare } from 'bcryptjs';
-import { IAuthDocument } from '@auth/interfaces/authInterfaces';
+import { AuthDocument } from '@auth/types/auth';
 import { model, Model, Schema } from 'mongoose';
 import { config } from '@root/config/setupConfig';
 
@@ -26,14 +26,14 @@ const authModelSchema: Schema = new Schema(
   }
 );
 
-authModelSchema.pre('save', async function (this: IAuthDocument, next: () => void) {
+authModelSchema.pre('save', async function (this: AuthDocument, next: () => void) {
   const hashedPassword: string = await hash(this.password as string, SALT_ROUND);
   this.password = hashedPassword;
   next();
 });
 
 authModelSchema.methods.comparePassword = async function (password: string): Promise<boolean> {
-  const hashedPassword: string = (this as unknown as IAuthDocument).password!;
+  const hashedPassword: string = (this as unknown as AuthDocument).password!;
   return compare(password, hashedPassword);
 };
 
@@ -41,5 +41,5 @@ authModelSchema.methods.hashPassword = async function (password: string): Promis
   return hash(password, SALT_ROUND);
 };
 
-const AuthModel: Model<IAuthDocument> = model<IAuthDocument>('Auth', authModelSchema, 'Auth');
+const AuthModel: Model<AuthDocument> = model<AuthDocument>('Auth', authModelSchema, 'Auth');
 export { AuthModel };

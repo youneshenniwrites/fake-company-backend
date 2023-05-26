@@ -9,16 +9,16 @@ declare global {
   }
 }
 
-export interface AuthPayload {
+export type AuthPayload = {
   userId: string;
   uId: string;
   email: string;
   username: string;
   avatarColor: string;
   iat?: number;
-}
+};
 
-export interface IAuthDocument extends Document {
+export type AuthDocument = Document & {
   _id: string | ObjectId;
   uId: string;
   username: string;
@@ -30,17 +30,17 @@ export interface IAuthDocument extends Document {
   passwordResetExpires?: number | string;
   comparePassword(password: string): Promise<boolean>;
   hashPassword(password: string): Promise<string>;
-}
+};
 
-export interface ISignUpData {
+export type SignUpData = {
   _id: ObjectId;
   uId: string;
   email: string;
   username: string;
   password: string;
   avatarColor: string;
-}
+};
 
-export interface IAuthJob {
-  value?: string | IAuthDocument;
-}
+export type AuthJob = {
+  value?: string | AuthDocument;
+};
