@@ -5,23 +5,23 @@ import cloudinary from 'cloudinary';
 dotenv.config({});
 
 class Config {
-  public SERVER_PORT: string | undefined;
-  public DATABASE_URL: string | undefined;
-  public JWT_TOKEN: string | undefined;
-  public NODE_ENV: string | undefined;
-  public SECRET_KEY_ONE: string | undefined;
-  public SECRET_KEY_TWO: string | undefined;
-  public CLIENT_URL: string | undefined;
-  public REDIS_HOST: string | undefined;
-  public CLOUD_NAME: string | undefined;
-  public CLOUD_API_KEY: string | undefined;
-  public CLOUD_API_SECRET: string | undefined;
-  public SENDER_EMAIL: string | undefined;
-  public SENDER_EMAIL_PASSWORD: string | undefined;
-  public SENDGRID_API_KEY: string | undefined;
-  public SENDGRID_SENDER: string | undefined;
-  public EC2_URL: string | undefined;
-  public SALT_ROUND: string | undefined;
+  public readonly SERVER_PORT: string | undefined;
+  public readonly DATABASE_URL: string | undefined;
+  public readonly JWT_TOKEN: string | undefined;
+  public readonly NODE_ENV: string | undefined;
+  public readonly SECRET_KEY_ONE: string | undefined;
+  public readonly SECRET_KEY_TWO: string | undefined;
+  public readonly CLIENT_URL: string | undefined;
+  public readonly REDIS_HOST: string | undefined;
+  public readonly CLOUD_NAME: string | undefined;
+  public readonly CLOUD_API_KEY: string | undefined;
+  public readonly CLOUD_API_SECRET: string | undefined;
+  public readonly SENDER_EMAIL: string | undefined;
+  public readonly SENDER_EMAIL_PASSWORD: string | undefined;
+  public readonly SENDGRID_API_KEY: string | undefined;
+  public readonly SENDGRID_SENDER: string | undefined;
+  public readonly EC2_URL: string | undefined;
+  public readonly SALT_ROUND: string | undefined;
 
   constructor() {
     this.SERVER_PORT = process.env.SERVER_PORT;
