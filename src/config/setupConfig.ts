@@ -21,6 +21,7 @@ class Config {
   public SENDGRID_API_KEY: string | undefined;
   public SENDGRID_SENDER: string | undefined;
   public EC2_URL: string | undefined;
+  public SALT_ROUND: string | undefined;
 
   constructor() {
     this.SERVER_PORT = process.env.SERVER_PORT;
@@ -39,6 +40,7 @@ class Config {
     this.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
     this.SENDGRID_SENDER = process.env.SENDGRID_SENDER;
     this.EC2_URL = process.env.EC2_URL;
+    this.SALT_ROUND = process.env.SALT_ROUND;
   }
 
   public createLogger(name: string) {

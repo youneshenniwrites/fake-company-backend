@@ -4,6 +4,7 @@ import { ObjectSchema } from 'joi';
 
 type validateWithJoiDecoratorType = (descriptor: PropertyDescriptor) => void;
 
+// TODO: return to video 39 and answer the question
 export function validateWithJoiDecorator(schema: ObjectSchema): validateWithJoiDecoratorType {
   return (descriptor: PropertyDescriptor) => {
     const originalMethod = descriptor.value;
