@@ -22,6 +22,7 @@ class Config {
   public readonly SENDGRID_SENDER: string | undefined;
   public readonly EC2_URL: string | undefined;
   public readonly SALT_ROUND: string | undefined;
+  public readonly BASE_PATH: string;
 
   constructor() {
     this.SERVER_PORT = process.env.SERVER_PORT;
@@ -41,6 +42,7 @@ class Config {
     this.SENDGRID_SENDER = process.env.SENDGRID_SENDER;
     this.EC2_URL = process.env.EC2_URL;
     this.SALT_ROUND = process.env.SALT_ROUND;
+    this.BASE_PATH = process.env.BASE_PATH || '';
   }
 
   public createLogger(name: string) {
