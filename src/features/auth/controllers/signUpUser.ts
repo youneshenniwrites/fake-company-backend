@@ -7,23 +7,23 @@ import { authService } from '@service/db/authService';
 import { ObjectId } from 'mongodb';
 import { Helpers } from '@global/helpers/helpers';
 import { AuthDocument, SignUpData } from '@auth/types/auth';
-import { uploadToCloudinary } from '@global/helpers/uploadToCloudinary';
+import { uploadFileToCloudinary } from '@global/helpers/uploadToCloudinary';
 import { UploadApiResponse } from 'cloudinary';
 
 export class SignUpUser {
   @validateWithJoiDecorator<SignUpUser>(signUpSchema)
   public async createUser(req: Request, res: Response): Promise<void> {
     const { username, email, password, avatarImage, avatarColor } = req.body;
-    const doesUserAlreadyExist = await authService.getUserDocumentByUsernameOrEmail(username, email);
 
+    const doesUserAlreadyExist = await authService.getUserDocumentByUsernameOrEmail(username, email);
     if (doesUserAlreadyExist) {
-      throw new BadRequestError('Invalid credentials');
+      throw new BadRequestError('User already exist!');
     }
 
     const authObjectId = new ObjectId(); // document ID for mongoDB
     const userObjectId = new ObjectId(); // user ID for mongoDB
     const uId = `${Helpers.generateRandomIntegers(12)}`;
-    const authData = SignUpUser.prototype.signupData({
+    const signUpData = SignUpUser.prototype.createSignupData({
       _id: authObjectId,
       uId,
       username,
@@ -32,16 +32,17 @@ export class SignUpUser {
       avatarColor
     });
 
-    const cloudinaryUploadResult = (await uploadToCloudinary(avatarImage, `${userObjectId}`, true, true)) as UploadApiResponse;
+    const uploadAvatarImage = (await uploadFileToCloudinary(avatarImage, `${userObjectId}`, true, true)) as UploadApiResponse;
+    const uploadAvatarImageNotSuccessful = !uploadAvatarImage.public_id;
 
-    if (!cloudinaryUploadResult.public_id) {
-      throw new BadRequestError('File upload: Error occurred. Try again.');
+    if (uploadAvatarImageNotSuccessful) {
+      throw new BadRequestError('Could not upload your avatar image. Please try again.');
     }
 
-    res.status(HTTP_STATUS.CREATED).json({ message: 'User creted sucessfully', authData });
+    res.status(HTTP_STATUS.CREATED).json({ message: 'User created sucessfully: ', signUpData });
   }
 
-  private signupData(data: SignUpData): AuthDocument {
+  private createSignupData(data: SignUpData): AuthDocument {
     const { _id, username, email, uId, password, avatarColor } = data;
     return {
       _id,

@@ -14,7 +14,7 @@ uploadToCloudinary('path/to/file.jpg', 'my_public_id', true, true)
 
 */
 
-export function uploadToCloudinary(
+export function uploadFileToCloudinary(
   file: string,
   public_id?: string,
   overwrite?: boolean,
