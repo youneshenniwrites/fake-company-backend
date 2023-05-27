@@ -13,4 +13,15 @@ export class Helpers {
   static lowerCase(word: string) {
     word.toLowerCase();
   }
+
+  static generateRandomIntegers(integerLength: number) {
+    const characters = '0123456789';
+    let result = '';
+
+    for (let i = 0; i < integerLength; i++) {
+      result += characters[Math.floor(Math.random() * characters.length)];
+    }
+
+    return parseInt(result, 10);
+  }
 }

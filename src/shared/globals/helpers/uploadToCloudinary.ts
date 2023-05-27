@@ -1,5 +1,19 @@
 import cloudinary, { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 
+/*
+
+THE BELOW CODE IS USED LIKE THIS
+
+uploadToCloudinary('path/to/file.jpg', 'my_public_id', true, true)
+  .then((response) => {
+    console.log('Upload successful:', response);
+  })
+  .catch((error) => {
+    console.error('Error uploading file:', error);
+  });
+
+*/
+
 export function uploadToCloudinary(
   file: string,
   public_id?: string,
@@ -16,17 +30,3 @@ export function uploadToCloudinary(
     });
   });
 }
-
-/*
-
-THE ABOVE CODE IS USED LIKE THIS
-
-uploadToCloudinary('path/to/file.jpg', 'my_public_id', true, true)
-  .then((response) => {
-    console.log('Upload successful:', response);
-  })
-  .catch((error) => {
-    console.error('Error uploading file:', error);
-  });
-
-*/
