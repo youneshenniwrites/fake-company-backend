@@ -1,4 +1,4 @@
-import { AuthDocument } from '@auth/types/auth';
+import { AuthDocument } from '@auth/types/authTypes';
 import { AuthModel } from '@auth/models/authModelSchema';
 import { Helpers } from '@global/helpers/helpers';
 

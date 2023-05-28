@@ -6,7 +6,7 @@ import { BadRequestError } from '@global/helpers/handleErrors';
 import { authService } from '@service/db/authService';
 import { ObjectId } from 'mongodb';
 import { Helpers } from '@global/helpers/helpers';
-import { AuthDocument, SignUpData } from '@auth/types/auth';
+import { AuthDocument, SignUpData } from '@auth/types/authTypes';
 import { uploadFileToCloudinary } from '@global/helpers/uploadToCloudinary';
 import { UploadApiResponse } from 'cloudinary';
 
