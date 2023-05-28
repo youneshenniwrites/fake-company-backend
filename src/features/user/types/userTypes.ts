@@ -23,6 +23,8 @@ export type UserDocument = Document & {
   bgImageVersion: string;
   bgImageId: string;
   profilePicture: string;
+  passwordResetToken?: string;
+  passwordResetExpires?: number | string;
   createdAt?: Date;
 };
 
