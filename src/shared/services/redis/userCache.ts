@@ -55,8 +55,13 @@ export class UserCache extends BaseRedisCache {
     };
 
     try {
+      if (!this.redisClient.isOpen) {
+        await this.redisClient.connect();
+      }
       await this.redisClient.zAdd('userCache', { score: parseInt(userUId, 10), value: redisKey });
-      await this.redisClient.hSet(`users: ${redisKey}`, dataTosaveInRedisAsKeyValuePairs);
+      for (const [itemKey, itemValue] of Object.entries(dataTosaveInRedisAsKeyValuePairs)) {
+        await this.redisClient.hSet(`CachedUsers:${redisKey}`, `${itemKey}`, `${itemValue}`);
+      }
     } catch (error) {
       this.logger.error(error);
       throw new ServerError('Server error. Try again.');
