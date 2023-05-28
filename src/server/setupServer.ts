@@ -1,5 +1,6 @@
 import { Application as ExpressApplication, Request, Response, NextFunction, urlencoded, json } from 'express';
 import 'express-async-errors';
+import Logger from 'bunyan';
 import { Server as HTTPServer } from 'http';
 import { Server as WebSocketServer } from 'socket.io';
 import { createClient as createRedisClient } from 'redis';
@@ -15,10 +16,12 @@ import { applicationRoutes } from '@root/routes/routes';
 import { config } from '@root/config/setupConfig';
 
 export class FakeCompanyServer {
-  private expressApp: ExpressApplication;
+  private readonly expressApp: ExpressApplication;
+  private readonly logger: Logger;
 
   constructor(expressApp: ExpressApplication) {
     this.expressApp = expressApp;
+    this.logger = config.createLogger('FAKE COMPANY SERVER >>>');
   }
 
   public start(): void {
@@ -38,14 +41,14 @@ export class FakeCompanyServer {
       this.startHttpServer(httpServer);
       this.establishWebSocketConnections(websocketServer);
     } catch (error) {
-      logger.error(error);
+      this.logger.error(error);
     }
   }
 
   private startHttpServer(httpServer: HTTPServer) {
-    logger.info(`Server started with process ${process.pid}`);
+    this.logger.info(`Server started with process ${process.pid}`);
     httpServer.listen(config.SERVER_PORT, () => {
-      logger.info(`Server running on port ${config.SERVER_PORT}`);
+      this.logger.info(`Server running on port ${config.SERVER_PORT}`);
     });
   }
 
@@ -107,7 +110,7 @@ export class FakeCompanyServer {
     });
 
     expressApp.use((error: IErrorResponse, _req: Request, res: Response, next: NextFunction) => {
-      logger.error(error);
+      this.logger.error(error);
       if (error instanceof CustomError) {
         return res.status(error.statusCode).json(error.serialiseErrors());
       }
@@ -115,5 +118,3 @@ export class FakeCompanyServer {
     });
   }
 }
-
-const logger = config.createLogger('SERVER >>>');

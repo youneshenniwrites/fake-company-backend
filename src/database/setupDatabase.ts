@@ -16,4 +16,4 @@ export const connectToDatabase = () => {
   mongoose.connection.on('disconnected', establishConnection);
 };
 
-const logger = config.createLogger('DATABASE >>>');
+const logger = config.createLogger('FAKE COMPANY DATABASE >>>');
