@@ -9,6 +9,8 @@ import { Helpers } from '@global/helpers/helpers';
 import { AuthDocument, SignUpData } from '@auth/types/authTypes';
 import { uploadFileToCloudinary } from '@global/helpers/uploadToCloudinary';
 import { UploadApiResponse } from 'cloudinary';
+import { UserDocument } from '@user/types/userTypes';
+import { userCache } from '@service/redis/userCache';
 
 export class SignUpUser {
   @validateWithJoiDecorator<SignUpUser>(signUpSchema)
@@ -39,11 +41,15 @@ export class SignUpUser {
       throw new BadRequestError('Could not upload your avatar image. Please try again.');
     }
 
+    //* Save user to Redis cache
+    const signUpDataForCache = SignUpUser.prototype.createSignupDataForCache(signUpData, userObjectId);
+    await userCache.saveUserToRedisCache(userObjectId.toString(), uId, signUpDataForCache);
+
     res.status(HTTP_STATUS.CREATED).json({ message: 'User created sucessfully: ', signUpData });
   }
 
-  private createSignupData(data: SignUpData): AuthDocument {
-    const { _id, username, email, uId, password, avatarColor } = data;
+  private createSignupData(signUpData: SignUpData): AuthDocument {
+    const { _id, username, email, uId, password, avatarColor } = signUpData;
     return {
       _id,
       uId,
@@ -53,5 +59,42 @@ export class SignUpUser {
       avatarColor,
       createdAt: new Date()
     } as unknown as AuthDocument;
+  }
+
+  private createSignupDataForCache(signUpData: AuthDocument, userObjectId: ObjectId): UserDocument {
+    const { _id, username, email, uId, password, avatarColor } = signUpData;
+    return {
+      _id: userObjectId,
+      authId: _id,
+      uId,
+      username: Helpers.capitalizeFirstLetter(username),
+      email,
+      password,
+      avatarColor,
+      profilePicture: '',
+      blocked: [],
+      blockedBy: [],
+      work: '',
+      location: '',
+      school: '',
+      quote: '',
+      bgImageVersion: '',
+      bgImageId: '',
+      followersCount: 0,
+      followingCount: 0,
+      postsCount: 0,
+      notifications: {
+        messages: true,
+        reactions: true,
+        comments: true,
+        follows: true
+      },
+      social: {
+        facebook: '',
+        instagram: '',
+        twitter: '',
+        youtube: ''
+      }
+    } as unknown as UserDocument;
   }
 }
