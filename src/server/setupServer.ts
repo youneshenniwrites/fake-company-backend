@@ -21,7 +21,7 @@ export class FakeCompanyServer {
 
   constructor(expressApp: ExpressApplication) {
     this.expressApp = expressApp;
-    this.logger = config.createLogger('FAKE COMPANY SERVER >>>');
+    this.logger = config.createLogger('EXPRESS SERVER >>>');
   }
 
   public start(): void {
@@ -46,9 +46,9 @@ export class FakeCompanyServer {
   }
 
   private startHttpServer(httpServer: HTTPServer) {
-    this.logger.info(`Server started with process ${process.pid}`);
+    this.logger.info(`SERVER STARTED WITH PROCESS ${process.pid}`);
     httpServer.listen(config.SERVER_PORT, () => {
-      this.logger.info(`Server running on port ${config.SERVER_PORT}`);
+      this.logger.info(`SERVER RUNNING ON PORT ${config.SERVER_PORT}`);
     });
   }
 
