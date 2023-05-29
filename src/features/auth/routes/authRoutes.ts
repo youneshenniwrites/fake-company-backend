@@ -16,3 +16,16 @@ class AuthRoutes {
 }
 
 export const authRoutes = new AuthRoutes();
+
+// * FP Equivalent
+// import express from 'express';
+
+// const createAuthRoutes = () => {
+//   const router = express.Router();
+
+//   router.post('/signup', SignUpUser.prototype.createUser);
+
+//   return router;
+// };
+
+// export const authRoutes = createAuthRoutes();
