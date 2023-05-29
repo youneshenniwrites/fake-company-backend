@@ -11,6 +11,7 @@ import { uploadFileToCloudinary } from '@global/helpers/uploadToCloudinary';
 import { UploadApiResponse } from 'cloudinary';
 import { UserDocument } from '@user/types/userTypes';
 import { userCache } from '@service/redis/userCache';
+import { authQueue } from '@service/queues/authQueue';
 
 export class SignUpUser {
   @validateWithJoiDecorator<SignUpUser>(signUpSchema)
@@ -44,6 +45,9 @@ export class SignUpUser {
     //* Save user to Redis cache
     const signUpDataForCache = SignUpUser.prototype.createSignupDataForCache(signUpData, userObjectId);
     await userCache.saveUserToRedisCache(userObjectId.toString(), uId, signUpDataForCache);
+
+    //* Add user info to database using a queue job
+    authQueue.addAuthUserJob('addAuthUserToDB', { value: signUpData });
 
     res.status(HTTP_STATUS.CREATED).json({ message: 'User created sucessfully: ', signUpData });
   }
