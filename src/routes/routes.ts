@@ -1,15 +1,16 @@
 import { Application } from 'express';
 import { authRoutes } from '@auth/routes/authRoutes';
 import { config } from '@root/config/setupConfig';
+import { serverAdapter } from '@service/queues/baseQueue';
 
 export function applicationRoutes(expressApp: Application) {
   const registerRoutes = () => {
+    expressApp.use('/queues', serverAdapter.getRouter());
     expressApp.use(config.BASE_PATH, authRoutes.getRoutes());
   };
   registerRoutes();
 }
 
-// app.use("/test", serverAdapter.getRouter());
 // app.use("", healthRoutes.health());
 // app.use("", healthRoutes.env());
 // app.use("", healthRoutes.instance());
