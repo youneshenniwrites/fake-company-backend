@@ -3,8 +3,10 @@ import Logger from 'bunyan';
 import { ExpressAdapter } from '@bull-board/express';
 import { BullAdapter } from '@bull-board/api/bullAdapter';
 import { createBullBoard } from '@bull-board/api';
-
 import { config } from '@root/config/setupConfig';
+import { AuthJob } from '@auth/types/authTypes';
+
+type IBaseJobData = AuthJob;
 
 let bullAdapters: BullAdapter[] = [];
 export let serverAdapter: ExpressAdapter;
@@ -40,7 +42,7 @@ export abstract class BaseQueue {
     });
   }
 
-  protected addJob(name: string, data: unknown): void {
+  protected addJob(name: string, data: IBaseJobData): void {
     this.queue.add(name, data, { attempts: 3, backoff: { type: 'fixed', delay: 5000 } });
   }
 
